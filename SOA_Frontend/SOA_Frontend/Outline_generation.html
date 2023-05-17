@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <base target="_top">
+   <script>
+     function submitForm() {
+      google.script.run.Waiting_Dialog();
+      google.script.run.outline_generate(document.getElementById("paragraph_detail"));
+     }
+   </script>
+ </head>
+ <body>
+   <h1>Enter the title or description of the paragraph</h1>
+   <form id="paragraph_detail">
+     <label for="title">Title</label>
+     <input type="text" id="title" name="title"><br><br>
+     <label for="description">Description</label>
+     <input type="text" id="description" name="description"><br><br>
+     <div>
+       <input type="button" value="Submit" onclick="submitForm();">
+   </form>
+ </body>
+</html>

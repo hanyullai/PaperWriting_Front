@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <base target="_top">
+   <script>
+     function submitForm() {
+      google.script.run.Waiting_Dialog();
+       google.script.run.outline_edit(document.getElementById("edit_detail"));
+     }
+   </script>
+ </head>
+ <body>
+   <h1>Select the section title which you want to edit and tell me how you would like to edit it</h1>
+   <form id="edit_detail">
+     <label for="instruction">Instruction</label>
+     <input type="text" id="instruction" name="instruction"><br><br>
+     <div>
+       <input type="button" value="Submit" onclick="submitForm();">
+   </form>
+ </body>
+</html>
