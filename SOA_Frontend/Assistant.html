@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+    /* p {
+      color: purple;
+    } */
+
+    h1{
+      color: #414141;
+      text-shadow: 2px 2px 5px gray;
+      text-align: center;
+    }
+
+    .background{
+      background-color: #ffffff;
+    }
+
+    .block{
+      padding: 5px;
+      background: #AFD3E2;
+      border-color: #0a0a0a;
+      border-style: solid;
+      border-radius: 5px;
+    }
+
+    body {
+      background-color: #AFD3E2;
+    }
+
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 2px;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type=button] {
+      width: 100%;
+      background-color: #19A7CE;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 2px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=button]:hover {
+      background-color: #146C94;
+    }
+
+    #words{
+      display: none;
+    }
+
+    #generate_block{
+      display: none;
+    }
+
+    #edit_block {
+      display: none;
+    }
+
+    #section_block {
+      display: none;
+    }
+
+    #button_box {
+      position: fixed;
+      bottom: 50px;
+    }
+
+    #next_step {
+      position: absolute;
+      right:20px;
+      color: white;
+      background-color: #209de6;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 80px;
+      height: 30px;
+    }
+
+    #next_step:hover {
+      background-color: #057ed7;
+    }
+
+    #next_step:disabled {
+      color: gray;
+      background: lightgray;
+      border: none; 
+    }
+
+    #next_step:disabled:hover {
+      color: gray;
+      background: lightgray;
+      border: none;
+      cursor: default;
+    }
+
+    #previous_step:disabled {
+      color: gray;
+      background: lightgray;
+      border: none; 
+    }
+
+    #previous_step:disabled:hover {
+      color: gray;
+      background: lightgray;
+      border: none;
+      cursor: default;
+    }
+
+    #previous_step {
+      position: absolute;
+      left:20px;
+      color: white;
+      background-color: #209de6;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 80px;
+      height: 30px;
+    }
+
+    #previous_step:hover {
+      background-color: #057ed7;
+    }
+
+    .talk_show{
+        width:93%;
+        height:35%;
+        
+        position: fixed;
+        bottom: 80px;
+        border-color: #0a0a0a;
+        border-style: solid;
+        border-radius: 5px;
+        
+        overflow:auto;
+    }
+
+    .atalk{
+        margin:10px; 
+    }
+    .atalk span{
+        display:inline-block;
+        background:#0181cc;
+        border-radius:10px;
+        color:#fff;
+        padding:5px 10px;
+    }
+    .btalk{
+        margin:10px;
+        text-align:right;
+    }
+    .btalk span{
+        display:inline-block;
+        background:#ef8201;
+        border-radius:10px;
+        color:#fff;
+        padding:5px 10px;
+    }
+
+    li{
+      cursor: pointer;
+    }
+    </style>
+    <script>
+      var state = 1;
+      
+      function next_step() {
+        if (state == 1){
+          document.getElementById("generate_block").style.display = "block"
+          document.getElementById("upload_block").style.display = "none";
+          document.getElementById("list").style.display = "none";
+          document.getElementById("words").style.display = "block";
+          document.getElementById("previous_step").disabled = false;
+          state = 2;
+        }
+        else if(state == 2){
+          document.getElementById("generate_block").style.display = "none";
+          document.getElementById("edit_block").style.display = "block";
+          // document.getElementById("next_step").disabled = true;
+          state = 3;
+        }  
+        else if(state == 3){
+          document.getElementById("edit_block").style.display = "none";
+          document.getElementById("section_block").style.display = "block";
+          document.getElementById("next_step").disabled = true;
+          state = 4;
+        }
+      }
+      function previous_step() {
+        if (state == 2){
+          document.getElementById("generate_block").style.display = "none";
+          document.getElementById("upload_block").style.display = "block";
+          document.getElementById("list").style.display = "block";
+          document.getElementById("words").style.display = "none";
+          document.getElementById("previous_step").disabled = true;
+          state = 1;
+        }
+        else if (state == 3){
+          document.getElementById("generate_block").style.display = "block";
+          document.getElementById("edit_block").style.display = "none";
+          // document.getElementById("next_step").disabled = false;
+          state = 2;
+        }  
+        else if (state == 4){
+          document.getElementById("edit_block").style.display = "block";
+          document.getElementById("section_block").style.display = "none";
+          document.getElementById("next_step").disabled = false;
+          state = 3;
+        }
+      }
+      
+
+      // 对话显示
+      function show_conversation_client(instruction){
+        var Words = document.getElementById("words");
+        var str = "";
+        str = '<div class="btalk"><span>你 : ' + instruction.value +'</span></div>' ;
+        Words.innerHTML = Words.innerHTML + str;
+      }
+      function show_conversation_server(message){
+        var Words = document.getElementById("words");
+        var str = "";
+        str = '<div class="atalk"><span>WA : ' + message +'</span></div>' ;
+        Words.innerHTML = Words.innerHTML + str;
+      }
+
+      function onSuccess(res) {
+        if(res == 1 ){
+          next_step();
+        }
+      }
+
+      function outline_generate_submit() {
+        google.script.run.Waiting_Dialog();
+        google.script.run.withSuccessHandler(onSuccess).outline_generate(document.getElementById("outline_generate_form"));
+        //google.script.run.test();
+      }
+      function show_dialog_edit(res){
+        if(res == 2){
+          google.script.run.Null_select_Dialog();
+          
+        }
+        else{
+          
+          var instruction;
+          instruction = document.getElementById("edit_form").instruction;
+          show_conversation_client(instruction);
+          google.script.run.Waiting_Dialog();
+          google.script.run.withSuccessHandler(show_conversation_server).outline_edit(document.getElementById("edit_form"));
+        }
+      }
+
+      function show_dialog_genarete(res){
+        if(res == 2){
+          google.script.run.Null_select_Dialog();
+          
+        }
+        else{ 
+          // var instruction;
+          // instruction = document.getElementById("section_form").instruction;
+          // show_conversation_client(instruction);
+          google.script.run.Waiting_Dialog();
+          google.script.run.withSuccessHandler(show_conversation_server).section_generate(document.getElementById("section_form"));
+        }
+      }
+
+      function edit_submit() {       
+        google.script.run.withSuccessHandler(show_dialog_edit).is_select();
+      }
+
+      function section_generate_submit() {
+        google.script.run.withSuccessHandler(show_dialog_genarete).is_select();
+      }
+
+      // 上传文献
+      // const fileList = document.getElementById('fileList')
+      function addItem(text) {
+        const list = document.getElementById('list')
+        var li = document.createElement('li')
+        li.textContent = text
+        // 绑定点击事件
+        li.addEventListener('click', () => {
+          // alert("删除" + text)
+          google.script.run.delete_file(text)
+          li.remove()
+        })
+        list.appendChild(li)
+        // alert(text); 
+      }
+      
+      function updateList(filename){
+        if (filename)
+          addItem(filename);
+      }
+
+      function submitForm() {
+      google.script.run.Waiting_Dialog();
+      google.script.run.withSuccessHandler(updateList).upload(document.getElementById("detail"));
+      }
+       
+    </script>  
+  </head>
+  <body >
+    <!-- 上传文献板块-->
+    <div class="block" id="upload_block">
+      <h1>上传文献</h1>
+      <form id="detail">
+        <label for="url">Url:</label><br>
+        <input type="text" id="url" name="url"><br><br>
+        <label for="reference">Reference:</label><br>
+        <input type="file" id="reference" name="reference" ><br><br>
+        <input type="button" value="提交" onclick="submitForm();">
+      </form>
+    </div>
+
+    <!-- 大纲生成板块 -->
+    <div class="block" id="generate_block">
+      <h1 id="generate">生成大纲</h1>
+      <!-- <p>请输入标题或者综述描述</p> -->
+        <form id="outline_generate_form">
+          <label for="title">标题:</label><br>
+          <input type="text" id="title" name="title" ><br><br>
+          <label for="description">综述描述:</label><br>
+          <input type="text" id="description" name="description"><br><br>
+          <input type="button" value="提交" onclick="outline_generate_submit();">
+        </form>
+    </div>
+    
+    <div class="block" id="edit_block">
+      <!-- 大纲修改板块 -->
+      <h1>修改内容</h1>      
+      <div>
+        <p>请选中相应内容并描述您想怎样修改它</p>
+        <form id="edit_form">
+          <label for="instruction">描述：</label>
+          <input type="text" id="instruction" name="instruction"><br><br>
+          <input type="button" value="提交" onclick="edit_submit();">
+        </form>
+      </div>
+    </div>
+    
+      <!-- 内容生成板块 -->
+    <div class="block" id="section_block">
+      <h1>内容生成</h1>
+      <div>
+        <p>请选中段落标题以生成相应内容</p>
+        <form id="section_form">
+          <input type="button" value="生成" onclick="section_generate_submit();">
+        </form>
+      </div>
+    </div>
+
+    <!-- 上传列表 -->
+    <div id="list">
+      <br><br>
+    </div>
+
+    <!-- 消息反馈板块 -->
+    <div class="talk_show" id="words">
+      <div class="atalk"><span id="asay">WA：欢迎使用写作助手！</span></div>
+      <!-- <div class="btalk"><span id="bsay">B说：还没呢，你呢？</span></div> -->
+    </div>
+    <!--分步按钮  -->
+    <div id="button_box" style="width:100%;">
+      <button id="previous_step" onclick="previous_step()" disabled="true">上一步</button>
+      <button id="next_step" onclick="next_step()" >下一步</button> 
+    </div>
+  </body>
+</html>

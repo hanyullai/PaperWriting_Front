@@ -1,1 +1,2 @@
 # PaperWriting_Front
+这是Writing Assistant小组的前端代码，如何使用见配置文件夹下内容
