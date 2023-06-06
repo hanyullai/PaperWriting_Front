@@ -241,6 +241,11 @@
       }
 
       function outline_generate_submit() {
+        if(document.getElementById("outline_generate_form").title.value == ""&& 
+        document.getElementById("outline_generate_form").description.value == ""){
+          alert("输入内容为空！")
+          return
+        }
         google.script.run.Waiting_Dialog();
         google.script.run.withSuccessHandler(onSuccess).outline_generate(document.getElementById("outline_generate_form"));
         //google.script.run.test();
@@ -274,7 +279,12 @@
         }
       }
 
-      function edit_submit() {       
+      function edit_submit() {
+        // alert(document.getElementById("edit_form").instruction)
+        if(document.getElementById("edit_form").instruction.value == ""){
+          alert("输入内容为空！")
+          return
+        }
         google.script.run.withSuccessHandler(show_dialog_edit).is_select();
       }
 
