@@ -20,7 +20,7 @@ function onOpen(){
   PropertiesService.getScriptProperties().setProperties(
       {
         'id':JSON.stringify([]),
-        'id_name':JSON.stringify([])
+        'id_name':JSON.stringify([]),
       }
     );
   createNewTrigger();
@@ -50,29 +50,20 @@ function outline_edit(form) {
         const start = elements[i].getStartOffset();
         const end = elements[i].getEndOffsetInclusive();
         text += element.asText().getText().substring(start, end + 1);
-        //text += element.asText().getText();
       } else if (elementType === DocumentApp.ElementType.PARAGRAPH) {
-        // const paragraph = element.asParagraph();
-        // const start = elements[i].getStartOffset();
-        // const end = elements[i].getEndOffsetInclusive();
-        // text += paragraph.getText().substring(start, end + 1);
-        // text += '\n';
         const paragraph = element.asParagraph();
         text += paragraph.getText();
         text += '\n'
       }
     }
-    //var tmpabstract = PropertiesService.getScriptProperties().getProperty("abstract").replace(/[\n]/g, '');
-    //DocumentApp.getActiveDocument().getBody().appendParagraph(text).setFontSize(25);
-    // if(text == PropertiesService.getScriptProperties().getProperty("abstract")){
-    //   DocumentApp.getActiveDocument().getBody().appendParagraph("true");
-    // }else{
-    //   DocumentApp.getActiveDocument().getBody().appendParagraph("false");
-    // }
-    if(PropertiesService.getScriptProperties().getProperty("title").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("abstract").includes(text) &&
-    !PropertiesService.getScriptProperties().getProperty("outline").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("section").includes(text)){
+    var tmptitle = PropertiesService.getScriptProperties().getProperty("title");
+    var tmpabstract =  PropertiesService.getScriptProperties().getProperty("abstract");
+    var tmpoutline = PropertiesService.getScriptProperties().getProperty("outline");
+    var tmpsection = PropertiesService.getScriptProperties().getProperty("section");
+    if((tmptitle && tmptitle.includes(text)) &&
+    !(tmpabstract && tmpabstract.includes(text)) &&
+    !(tmpoutline && tmpoutline.includes(text)) && 
+    !(tmpsection && tmpsection.includes(text))){
       var data = {
         'title': text.toString(),
         'instruction': form.instruction,
@@ -87,19 +78,12 @@ function outline_edit(form) {
       var response = UrlFetchApp.fetch('http://36.103.203.43:8010/outline/edit_title',options);
       text = Utilities.jsonParse(response);
       if(text.status == "success"){
-        // var ui = DocumentApp.getUi();
-        // var message = "标题修改：" + "\n" + text.explain;
-        // ui.alert("提示", message, ui.ButtonSet.OK);
         explain = text.explain;
         Edit_SuccessDialog(text.explain);
-        //return text.explain;
       }else{
-        // var ui = DocumentApp.getUi();
-        // var message = text.msg;
-        // ui.alert("标题修改失败", message, ui.ButtonSet.OK);
         msg = text.msg;
         Edit_FailDialog(text.msg);
-        return msg;
+        return (msg?msg:"修改失败");
       }
       newText = text.title;
       PropertiesService.getScriptProperties().setProperties(
@@ -117,14 +101,9 @@ function outline_edit(form) {
             element.insertText(startIndex, newText).setFontSize(20);
             replaced = true;
           } else {
-            // This block handles a selection that ends with a partial element. We
-            // want to copy this partial text to the previous element so we don't
-            // have a line-break before the last partial.
             const parent = element.getParent();
             const remainingText = element.getText().substring(endIndex + 1);
             parent.getPreviousSibling().asText().appendText(remainingText);
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just remove the text within the last paragraph instead.
             if (parent.getNextSibling()) {
               parent.removeFromParent();
             } else {
@@ -134,14 +113,10 @@ function outline_edit(form) {
         } else {
           const element = elements[i].getElement();
           if (!replaced && element.editAsText) {
-            // Only translate elements that can be edited as text, removing other
-            // elements.
             element.clear();
             element.asText().setText(newText).setFontSize(20);
             replaced = true;
           } else {
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just clear the element.
             if (element.getNextSibling()) {
               element.removeFromParent();
             } else {
@@ -150,10 +125,10 @@ function outline_edit(form) {
           }
         }
       }
-    } else if(!PropertiesService.getScriptProperties().getProperty("title").includes(text) && 
-    (PropertiesService.getScriptProperties().getProperty("abstract").includes(text))&&
-    !PropertiesService.getScriptProperties().getProperty("outline").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("section").includes(text)){
+    } else if(!(tmptitle && tmptitle.includes(text)) &&
+    (tmpabstract && tmpabstract.includes(text)) &&
+    !(tmpoutline && tmpoutline.includes(text)) && 
+    !(tmpsection && tmpsection.includes(text))){
       var mark_abstract = PropertiesService.getScriptProperties().getProperty("abstract").replace(text, "<待修改内容>" + text + "</待修改内容>");
       var data = {
         'title': PropertiesService.getScriptProperties().getProperty('title'),
@@ -170,18 +145,12 @@ function outline_edit(form) {
       var response = UrlFetchApp.fetch('http://36.103.203.43:8010/outline/edit_abstract',options);
       text = Utilities.jsonParse(response);
       if(text.status == "success"){
-        //var ui = DocumentApp.getUi();
-        //var message = "摘要修改：" + "\n" + text.explain;
-        //ui.alert("提示", message, ui.ButtonSet.OK);
         explain = text.explain;
         Edit_SuccessDialog(text.explain);
       }else{
-        //var ui = DocumentApp.getUi();
-        //var message = text.msg;
-        //ui.alert("摘要修改失败", message, ui.ButtonSet.OK);
         msg = text.msg;
         Edit_FailDialog(text.msg);
-        return msg;
+        return (msg?msg:"修改失败");
       }
       newText = text.abstract;
       PropertiesService.getScriptProperties().setProperties(
@@ -199,14 +168,9 @@ function outline_edit(form) {
             element.insertText(startIndex, newText).setFontSize(12);
             replaced = true;
           } else {
-            // This block handles a selection that ends with a partial element. We
-            // want to copy this partial text to the previous element so we don't
-            // have a line-break before the last partial.
             const parent = element.getParent();
             const remainingText = element.getText().substring(endIndex + 1);
             parent.getPreviousSibling().asText().appendText(remainingText);
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just remove the text within the last paragraph instead.
             if (parent.getNextSibling()) {
               parent.removeFromParent();
             } else {
@@ -216,14 +180,10 @@ function outline_edit(form) {
         } else {
           const element = elements[i].getElement();
           if (!replaced && element.editAsText) {
-            // Only translate elements that can be edited as text, removing other
-            // elements.
             element.clear();
             element.asText().setText(newText).setFontSize(12);
             replaced = true;
           } else {
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just clear the element.
             if (element.getNextSibling()) {
               element.removeFromParent();
             } else {
@@ -232,10 +192,10 @@ function outline_edit(form) {
           }
         }
       }
-    }else if(!PropertiesService.getScriptProperties().getProperty("title").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("abstract").includes(text) &&
-    PropertiesService.getScriptProperties().getProperty("outline").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("section").includes(text)){
+    }else if(!(tmptitle && tmptitle.includes(text)) &&
+    !(tmpabstract && tmpabstract.includes(text)) &&
+    (tmpoutline && tmpoutline.includes(text)) && 
+    !(tmpsection && tmpsection.includes(text))){
       if(selection.getRangeElements().length == 1){
         Reselect_Dialog();
         return;
@@ -255,26 +215,17 @@ function outline_edit(form) {
       var response = UrlFetchApp.fetch('http://36.103.203.43:8010/outline/edit_outline',options);
       text = Utilities.jsonParse(response);
       if(text.status == "success"){
-        //var ui = DocumentApp.getUi();
-        //var message = "大纲修改：" + "\n" + text.explain;
-        //ui.alert("提示", message, ui.ButtonSet.OK);
         state = "success";
         explain = text.explain;
         Edit_SuccessDialog(text.explain);
       }else{
-        //var ui = DocumentApp.getUi();
-        //var message = text.msg;
-        //ui.alert("大纲修改失败", message, ui.ButtonSet.OK);
         state = "fail";
         msg = text.msg;
         Edit_FailDialog(text.msg);
-        return msg;
+        return (msg?msg:"修改失败");
       }
       newText = text.outline;
       const newTextArray = newText;
-      // for (let i = 0; i < newTextArray.length; i++){
-      //   DocumentApp.getActiveDocument().getBody().appendParagraph(newTextArray[i]).setFontSize(25);
-      // }
       for (let i = 0; i < elements.length; ++i) {
         if (elements[i].isPartial()) {
           const element = elements[i].getElement().asText();
@@ -282,7 +233,6 @@ function outline_edit(form) {
           const endIndex = elements[i].getEndOffsetInclusive();
           element.deleteText(startIndex, endIndex);
           if(i == elements.length - 1){
-            //DocumentApp.getActiveDocument().getBody().appendParagraph("break").setFontSize(25);
             break;
           }
           if (!replaced) {
@@ -296,40 +246,26 @@ function outline_edit(form) {
             }
             // 逐个插入剩余的段落
             for (let j = 1; j < newTextArray.length; j++) {
-              //newTextArray[j] = newTextArray[j].replace(/\n/g, "");  
-              //DocumentApp.getActiveDocument().getBody().appendParagraph(newTextArray[j]).setFontSize(30);
               const parentElement = element.getParent();
               const elementIndex = parentElement.getChildIndex(element);
               const newParagraph = parentElement.insertParagraph(elementIndex + j + 1, "");
               newParagraph.appendText(newTextArray[j]).setFontSize(15);
             }
-            //newTextArray[j] = newTextArray[j].replace(/\n/g, "");  
-            // const parentElement = element.getParent();
-            // const elementIndex = parentElement.getChildIndex(element);
-            // const newParagraph = parentElement.insertParagraph(elementIndex + j + 1, "");
-            
-            // newParagraph.appendText(newTextArray[j]).setFontSize(15);
           }
         } else {
           const element = elements[i].getElement();
           if (!replaced && element.editAsText) {
-            // Only translate elements that can be edited as text, removing other
-            // elements.
             element.clear();
             element.asText().setText(newTextArray[0]).setFontSize(15);
             replaced = true;
             // 逐个插入剩余的段落
             for (let j = 1; j < newTextArray.length; j++) {
-              //newTextArray[j] = newTextArray[j].replace(/\n/g, "");  
-              //DocumentApp.getActiveDocument().getBody().appendParagraph(newTextArray[j]).setFontSize(30);
               const parentElement = element.getParent();
               const elementIndex = parentElement.getChildIndex(element);
               const newParagraph = parentElement.insertParagraph(elementIndex + j + 1, "");
               newParagraph.appendText(newTextArray[j]).setFontSize(15);
             }
           } else {
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just clear the element.
             if (element.getNextSibling()) {
               element.removeFromParent();
             } else {
@@ -338,10 +274,10 @@ function outline_edit(form) {
           }
         }
       }
-    }else if(!PropertiesService.getScriptProperties().getProperty("title").includes(text) && 
-    !PropertiesService.getScriptProperties().getProperty("abstract").includes(text) &&
-    !PropertiesService.getScriptProperties().getProperty("outline").includes(text) && 
-    PropertiesService.getScriptProperties().getProperty("section").includes(text)){
+    }else if(!(tmptitle && tmptitle.includes(text)) &&
+    !(tmpabstract && tmpabstract.includes(text)) &&
+    !(tmpoutline && tmpoutline.includes(text)) && 
+    (tmpsection && tmpsection.includes(text))){
       const element = selection.getSelectedElements()[0].getElement().asText();
       const paragraphElement = element.getParent();
       var selected_section = paragraphElement.getText();
@@ -367,18 +303,12 @@ function outline_edit(form) {
       //DocumentApp.getActiveDocument().getBody().appendParagraph("get response").setFontSize(25);
       text = Utilities.jsonParse(response);
       if(text.status == "success"){
-        //var ui = DocumentApp.getUi();
-        //var message = "段落修改：" + "\n" + text.explain;
-        //ui.alert("提示", message, ui.ButtonSet.OK);
         explain = text.explain;
         Edit_SuccessDialog(text.explain);
       }else{
-        //var ui = DocumentApp.getUi();
-        //var message = text.msg;
-        //ui.alert("段落修改失败", message, ui.ButtonSet.OK);
         msg = text.msg;
         Edit_FailDialog(text.msg);
-        return msg;
+        return (msg?msg:"修改失败");
       }
       newText = text.paragraph;
       for (let i = 0; i < elements.length; ++i) {
@@ -391,14 +321,9 @@ function outline_edit(form) {
             element.insertText(startIndex, newText).setFontSize(12);
             replaced = true;
           } else {
-            // This block handles a selection that ends with a partial element. We
-            // want to copy this partial text to the previous element so we don't
-            // have a line-break before the last partial.
             const parent = element.getParent();
             const remainingText = element.getText().substring(endIndex + 1);
             parent.getPreviousSibling().asText().appendText(remainingText);
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just remove the text within the last paragraph instead.
             if (parent.getNextSibling()) {
               parent.removeFromParent();
             } else {
@@ -408,14 +333,10 @@ function outline_edit(form) {
         } else {
           const element = elements[i].getElement();
           if (!replaced && element.editAsText) {
-            // Only translate elements that can be edited as text, removing other
-            // elements.
             element.clear();
             element.asText().setText(newText).setFontSize(12);
             replaced = true;
           } else {
-            // We cannot remove the last paragraph of a doc. If this is the case,
-            // just clear the element.
             if (element.getNextSibling()) {
               element.removeFromParent();
             } else {
@@ -425,14 +346,10 @@ function outline_edit(form) {
         }
       }
     }else{
-      // var ui = DocumentApp.getUi();
-      // var message = "请重新选择修改部分";
-      // ui.alert("失败", message, ui.ButtonSet.OK);
       Reselect_Dialog();
       return;
     }
-    //DocumentApp.getActiveDocument().getBody().appendParagraph("return").setFontSize(25);
-    return explain;
+    return (explain?explain:"修改成功");
   }
 }
 
@@ -855,19 +772,3 @@ function is_select() {
     return 2;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
