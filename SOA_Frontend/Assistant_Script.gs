@@ -35,6 +35,9 @@ function showDemoSidebar(){
 
 //大纲修改函数
 function outline_edit(form) {
+  if(form.instruction.toString().trim() == ""){
+    return "请输入有效文本";
+  }
   var paragraphs = DocumentApp.getActiveDocument().getBody().getParagraphs(); 
   const selection = DocumentApp.getActiveDocument().getSelection();
   var explain = "";
