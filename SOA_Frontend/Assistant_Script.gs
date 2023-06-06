@@ -466,7 +466,7 @@ function outline_generate(form){
       var num = parseInt(i) + 1
       var str = num.toString();
       doc.getBody().appendParagraph(str + ' ' + text.outline[i].section).setFontSize(15);
-      outline += (str + text.outline[i].section + "\\n");
+      outline += (str + ' ' + text.outline[i].section + "\\n");
       recursion_json(text.outline[i], doc, i);
     }
     PropertiesService.getScriptProperties().setProperties(
@@ -495,7 +495,7 @@ function recursion_json(a, doc, i){
     var num2 = parseInt(k) + 1;
     var str = num1.toString()+ "." + num2.toString();
     doc.getBody().appendParagraph(str + ' ' + a.sub[k].section).setFontSize(15);
-    outline += (str + a.sub[k].section + "\\n");
+    outline += (str + ' ' + a.sub[k].section + "\\n");
     if(a.sub[k].sub[0] != {}){
       recursion_json(a.sub[k]);
     }
