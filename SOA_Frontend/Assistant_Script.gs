@@ -201,7 +201,7 @@ function outline_edit(form) {
     !(tmpsection && tmpsection.includes(text))){
       if(selection.getRangeElements().length == 1){
         Reselect_Dialog();
-        return;
+        return "请重新选择修改部分";
       }
       var data = {
         'title': PropertiesService.getScriptProperties().getProperty('title'),
@@ -350,7 +350,7 @@ function outline_edit(form) {
       }
     }else{
       Reselect_Dialog();
-      return;
+      return "请重新选择修改部分";
     }
     return (explain?explain:"修改成功");
   }
@@ -442,7 +442,7 @@ function section_generate() {
     }
     if(!PropertiesService.getScriptProperties().getProperty("outline").includes(text)){
       Reselect_Dialog();
-      return "请重新选择";
+      return "请重新选择修改部分";
     }
     var data = {
       'title': PropertiesService.getScriptProperties().getProperty('title'),
