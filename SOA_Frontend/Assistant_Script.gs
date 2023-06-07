@@ -709,7 +709,7 @@ function upload(form) {
       DocumentApp.getActiveDocument().getBody().appendParagraph("None");
     }
     var data = {
-      'url': form.url,
+      'url': '',
       'token': 'fdsaghoawhglejfkldashf123lk12h@',
       'file': encodefile,
     };

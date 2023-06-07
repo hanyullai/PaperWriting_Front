@@ -325,8 +325,9 @@
     <div class="block" id="upload_block">
       <h2>上传文献</h2>
       <form id="detail">
-        <label for="url">Url:</label>
-        <input type="text" id="url" name="url"><br>
+        <!-- <label for="url">Url:</label>
+        <input type="text" id="url" name="url"><br> -->
+        <p>在此选择参考文献上传，下方会显示文件列表，点击对应文件可删除</p>
         <label for="reference">Reference:</label>
         <input type="file" id="reference" name="reference" ><br>
         <input type="button" value="提交" onclick="submitForm();">
@@ -340,6 +341,7 @@
         <form id="outline_generate_form">
           <label for="title">标题:</label>
           <input type="text" id="title" name="title" ><br>
+          
           <label for="description">综述描述:</label>
           <input type="text" id="description" name="description"><br>
           <input type="button" value="提交" onclick="outline_generate_submit();">
@@ -371,7 +373,7 @@
     </div>
 
     <!-- 上传列表 -->
-    <div id="list" style="maigin-top: 2em">
+    <div id="list">
       <br><br>
     </div>
 
