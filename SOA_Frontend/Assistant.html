@@ -7,7 +7,7 @@
       color: purple;
     } */
 
-    h1{
+    h2{
       color: #414141;
       text-shadow: 2px 2px 5px gray;
       text-align: center;
@@ -241,6 +241,11 @@
       }
 
       function outline_generate_submit() {
+        if(document.getElementById("outline_generate_form").title.value == ""&& 
+        document.getElementById("outline_generate_form").description.value == ""){
+          alert("输入内容为空！")
+          return
+        }
         google.script.run.Waiting_Dialog();
         google.script.run.withSuccessHandler(onSuccess).outline_generate(document.getElementById("outline_generate_form"));
         //google.script.run.test();
@@ -274,7 +279,12 @@
         }
       }
 
-      function edit_submit() {       
+      function edit_submit() {
+        // alert(document.getElementById("edit_form").instruction)
+        if(document.getElementById("edit_form").instruction.value == ""){
+          alert("输入内容为空！")
+          return
+        }
         google.script.run.withSuccessHandler(show_dialog_edit).is_select();
       }
 
@@ -313,37 +323,37 @@
   <body >
     <!-- 上传文献板块-->
     <div class="block" id="upload_block">
-      <h1>上传文献</h1>
+      <h2>上传文献</h2>
       <form id="detail">
-        <label for="url">Url:</label><br>
-        <input type="text" id="url" name="url"><br><br>
-        <label for="reference">Reference:</label><br>
-        <input type="file" id="reference" name="reference" ><br><br>
+        <label for="url">Url:</label>
+        <input type="text" id="url" name="url"><br>
+        <label for="reference">Reference:</label>
+        <input type="file" id="reference" name="reference" ><br>
         <input type="button" value="提交" onclick="submitForm();">
       </form>
     </div>
 
     <!-- 大纲生成板块 -->
     <div class="block" id="generate_block">
-      <h1 id="generate">生成大纲</h1>
+      <h2 id="generate">生成大纲</h2>
       <!-- <p>请输入标题或者综述描述</p> -->
         <form id="outline_generate_form">
-          <label for="title">标题:</label><br>
-          <input type="text" id="title" name="title" ><br><br>
-          <label for="description">综述描述:</label><br>
-          <input type="text" id="description" name="description"><br><br>
+          <label for="title">标题:</label>
+          <input type="text" id="title" name="title" ><br>
+          <label for="description">综述描述:</label>
+          <input type="text" id="description" name="description"><br>
           <input type="button" value="提交" onclick="outline_generate_submit();">
         </form>
     </div>
     
     <div class="block" id="edit_block">
       <!-- 大纲修改板块 -->
-      <h1>修改内容</h1>      
+      <h2>修改内容</h2>      
       <div>
         <p>请选中相应内容并描述您想怎样修改它</p>
         <form id="edit_form">
           <label for="instruction">描述：</label>
-          <input type="text" id="instruction" name="instruction"><br><br>
+          <input type="text" id="instruction" name="instruction"><br>
           <input type="button" value="提交" onclick="edit_submit();">
         </form>
       </div>
@@ -351,7 +361,7 @@
     
       <!-- 内容生成板块 -->
     <div class="block" id="section_block">
-      <h1>内容生成</h1>
+      <h2>内容生成</h2>
       <div>
         <p>请选中段落标题以生成相应内容</p>
         <form id="section_form">
