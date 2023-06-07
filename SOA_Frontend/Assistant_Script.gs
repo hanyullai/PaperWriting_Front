@@ -440,6 +440,10 @@ function section_generate() {
         text += element.asText().getText();
       }
     }
+    if(!PropertiesService.getScriptProperties().getProperty("outline").includes(text)){
+      Reselect_Dialog();
+      return "请重新选择";
+    }
     var data = {
       'title': PropertiesService.getScriptProperties().getProperty('title'),
       'abstract': PropertiesService.getScriptProperties().getProperty('abstract'),
